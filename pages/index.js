@@ -1,65 +1,61 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import Head from "next/head";
+import Image from "next/image";
+import Link from "next/link"
+import { Box, Text, Wrap, WrapItem } from "@chakra-ui/react";
 
-export default function Home() {
+export default function Home(props) {
   return (
-    <div className={styles.container}>
+    <div>
       <Head>
-        <title>Create Next App</title>
+        <title>Image Gallery</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
+      <Box overflow="hidden" bg="#393e46" minH="100vh">
+          <Box overflow="hidden" bg="#eeeeee" mb="1rem ">
+          <Text
+            color= "#393e46"
+            fontWeight="semibold"
+            mb="1rem"
+            ml="1rem"
+            textAlign="left"
+            fontSize={["4xl", "4xl", "5xl", "5xl"]}
           >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
+           ImageG
+          </Text>
+          </Box>
+   
+          <Wrap px="1rem" spacing={4} justify="center" >
+            {
+            props.URLs.map((pic) => (
+                <WrapItem
+                key={pic.id}
+                boxShadow="base"
+                overflow="hidden"
+                lineHeight="0"
+                _hover={{ boxShadow: "dark-lg" }}
+                >
+                <Link href={`/photos/${pic.id}`}>
+                  <a><Image src={pic.url} height={300} width={300} alt={pic.url}/></a></Link> 
+                </WrapItem>
+             ))
+            }
+          </Wrap>
+       
 
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
+      </Box>
     </div>
-  )
+  );
 }
+
+Home.getInitialProps= async function(){
+  const res=await fetch ('https://www.reddit.com/r/memes.json?limit=100');
+  const data=await res.json();
+    const send=[];
+    data.data.children.forEach((element,index) => {
+         if(index>1){
+             send.push({url:element.data.url,id:index,thumbnail:element.data.thumbnail});
+         }
+    });
+
+   return { URLs:send}; 
+ };
